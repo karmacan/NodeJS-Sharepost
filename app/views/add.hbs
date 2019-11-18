@@ -1,0 +1,32 @@
+<!-- LOOPS IN HANDLEBARS (errors comes from app.js in pkg) -->
+{{#each errors}}
+<div class="alert alert-danger">{{text}}</div>
+{{/each}}
+
+<div class="card card-body">
+    <h3>Video Idea</h3>
+    <form action="/ideas" method="post">
+        <!-- CONDITIONS IN HANDLEBARS (rewrite comes from app.js in pkg) -->
+        {{#if errors}}
+        <div class="form-group">
+            <label for="title">Title</label>
+            <input type="text" class="form-control" name="title" value="{{title}}">
+        </div>
+        <div class="form-group">
+            <label for="title">Details</label>
+            <textarea type="text" class="form-control" name="details">{{details}}</textarea>
+        </div>
+        {{else}}
+        <div class="form-group">
+            <label for="title">Title</label>
+            <input type="text" class="form-control" name="title">
+        </div>
+        <div class="form-group">
+            <label for="title">Details</label>
+            <textarea type="text" class="form-control" name="details"></textarea>
+        </div>
+        {{/if}}
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+
