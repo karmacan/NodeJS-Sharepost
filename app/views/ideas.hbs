@@ -1,0 +1,36 @@
+<style>
+.card {
+    float: left;
+    width: 75%;
+}
+.btn.btn-primary {
+    float: left;
+    width: 20%;
+    margin-left: 2.5%;
+    margin-right: 2.5%;
+}
+form {
+    float: left;
+    width: 20%;
+    margin-left: 2.5%;
+    margin-right: 2.5%;    
+    margin-top: 5px;
+}
+</style>
+
+{{#each ideas}}
+<div class="container">
+    <div class="card card-body mb-1">
+        <h4>{{title}}</h4>
+        <p>{{details}}</p>
+    </div>
+    <!-- REDIRECT TO EDIT PAGE (GET) -->
+    <a class="btn btn-primary btn-block" href="/edit/{{_id}}">Edit</a>
+    <!-- METHOD OVERRIDE (DELETE) -->
+    <form action="/ideas/{{_id}}?_method=DELETE" method="post"><!-- !!! --><input type="hidden" name="_method" value="DELETE">
+        <input type="submit" class="btn btn-danger btn-block" value="Delete">
+    </form>
+</div>
+{{else}}
+<p>No video idea listed.</p>
+{{/each}}
