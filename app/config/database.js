@@ -1,3 +1,4 @@
+// process.env.NODE_ENV set by Heroku
 if (process.env.NODE_ENV === 'production') {
   // REMOTE DB
   const mlabUser = 'host';

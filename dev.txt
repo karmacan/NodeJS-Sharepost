@@ -1,14 +1,22 @@
 
 ALIAS SCRIPTS (which don't need 'run' keyword):
-test
-start
-restart
-stop
+"test"
+"start"
+"restart"
+"stop"
 
 ////////////////////////////////////////////////////////////////////////////////
 
 # START MONGO SERVER [before run app] (local mongo db)
 mongod
+
+////////////////////////////////////////////////////////////////////////////////
+
+Git [local] (version control)
+
+git init
+git add .
+git commit -am "COMMIT_NAME"
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -20,18 +28,34 @@ DB user pass: c0dew0rd
 
 ////////////////////////////////////////////////////////////////////////////////
 
-GitHub
-
-git init
-git add .
-git commit -am "cmt init"
-git push heroku master
-
-heroku open
+Heroku (remote hosting server)
+Login: karmacan@mail.ru
+Password: GB9154dfa
 
 ////////////////////////////////////////////////////////////////////////////////
 
-Heroku (remote hosting server)
+Heroku CLI
 
+// INSTALL HEROKU (once)
+brew tap heroku/brew && brew install heroku
+
+// CHECK VERSION
+heroku -v
+
+// LOGIN HEROKU
+heroku login
+
+// CREATE APP REPO
 heroku create
-heroku git:remote -a HEROCU_PROJECT_NAME
+
+// ATTACH GIT
+heroku git:remote -a HEROCU_APP_REPO_NAME
+
+// PUSH TO HEROKU
+git push heroku master
+
+// OPEN APP VIA HEROKU
+heroku open
+
+
+
