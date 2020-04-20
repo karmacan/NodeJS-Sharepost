@@ -1,43 +1,22 @@
-
-////////////////////////////////////////////////////////////////////////////////
-// !!! MAIN REQUIRES
-////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////
+// SETUP SERVER
 
 const express = require('express'); // plug express module to app (path to module)
-const exphbs = require('express-handlebars');
-const bp = require('body-parser');
-
-const mongoose = require('mongoose');
-const methodOverride = require('method-override');
-
-const expses = require('express-session'); // for flash
-const flash = require('connect-flash');
-
-const path = require('path'); // inner NodeJS module for path operations !!! public static folder !!!
-
-const bcrypt = require('bcryptjs');
-const passport = require('passport'); // strategy defines in /config/passport.js
-
 const app = express(); // allows to use express methods (GET, POST, ...)
 
-////////////////////////////////////////////////////////////////////////////////
-// EXTENTIONS' MIDDLEWARE ADJUSTING
-////////////////////////////////////////////////////////////////////////////////
+const port = process.env.PORT || 5000; // process.env.PORT for Heroku
 
-const mongConnectManaged = function() {
-    const now = new Date().toString().substr(4, 20);
-    const whichMongo = process.env.NODE_ENV ? 'Remote' : 'Local';
-    console.log(`[${now}] ${whichMongo} MongoDB connected...`)
-}
+app.listen(port, () => {
+    console.log(`[_dev_] Server started on port ${port}...`);
+});
 
-const mongConnectFailed = function(er) {
-    console.log(er);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
+////////////////////////////////////////
 // Exp Handlebars
+
+const exphbs = require('express-handlebars');
+
 app.set('view engine', 'hbs');
+
 const main = {
     partialsDir: "./app/views/partials", 
     layoutsDir: "./app/views/layouts", 
@@ -46,35 +25,98 @@ const main = {
 };
 app.engine('hbs', exphbs(main)); // set default layout (views/layouts/main.hbs)
 
-// BodyParser
+app.set('views', './app/views'); // reset default views folder
+
+////////////////////////////////////////
+// BodyParser [depr] (grand access to req.body)
+
+const bp = require('body-parser');
+
 app.use(bp.urlencoded({extended: false}));
 app.use(bp.json());
 
+////////////////////////////////////////
 // Mongoose (DB)
+
+const mongoose = require('mongoose');
+const { mongConnectManaged, mongConnectFailed } = require('./helprs/mongLog');
+
 const database = require('./config/database');
 const mongoPath = database.mongoPath;
 mongoose.connect(mongoPath).then(mongConnectManaged).catch(mongConnectFailed); // Promise
 
+// DB MODELS
+require('./models/Idea.js');
+require('./models/User.js');
+const IdeaModel = mongoose.model('Idea');
+const UserModel = mongoose.model('User');
+
+////////////////////////////////////////
 // Method Override
+
+// Overrides client put/delete requests
+// with url query ?_method=METHOD
+// to corresponding server event listener method
+
+const methodOverride = require('method-override');
+
 app.use(methodOverride('_method'));
 
+////////////////////////////////////////
 // Exp Session
+
+// Сессия позволяет использовать кастомные переменные 
+// req.session.VARIABLE
+// внутри запроса
+// которые хранят свое значение 
+// даже после окончания запроса
+// но в течении времени пока пользователь на сайте
+
+const expses = require('express-session'); // for flash
+
 app.use(expses({
-    secret: 'secret',
+    secret: '',
     resave: true,
     saveUninitialized: true
 }));
 
-// Connect Flash
+////////////////////////////////////////
+// Flash
+
+const flash = require('connect-flash');
+
 app.use(flash());
 
+////////////////////////////////////////
 // PassportJS
+
+const passport = require('passport'); // strategy defines in /config/passport.js
+
 app.use(passport.initialize());
 app.use(passport.session());
 
-////////////////////////////////////////////////////////////////////////////////
+// PASSPORT CONFIG !!! THROW required passport instance to passport.js !!!
+
+require('./config/passport.js')(passport); // separation middleware from APP [IIF]
+
+////////////////////////////////////////
+// Bcrypt
+
+const bcrypt = require('bcryptjs');
+
+////////////////////////////////////////
+// ESTABLISH PUBLIC STATIC FOLDER
+
+const path = require('path'); // inner NodeJS module for path operations !!! public static folder !!!
+
+app.use(express.static(path.join(__dirname, 'public'))); // default dir for including files on client side
+
+////////////////////////////////////////
 // MIDDLEWARE FUNCTION FOR GLOBAL VARS
-////////////////////////////////////////////////////////////////////////////////
+
+// Binds res.locals.VARIABLE for _msg.hbs with flash event
+// Assigns res.locals.VARIABLE when flash event emmit in request
+// Free res.locals.VARIABLE on page refresh or redirrect
 
 const setGlobal = function(req, res, next) {
     // Global
@@ -93,55 +135,10 @@ const setGlobal = function(req, res, next) {
     next();
 }
 
-////////////////////////////////////////////////////////////////////////////////
-
 app.use(setGlobal);
 
 ////////////////////////////////////////////////////////////////////////////////
-// !!! RESET DEFAULT VIEWS FOLDER !!!
-////////////////////////////////////////////////////////////////////////////////
-
-app.set('views', './app/views');
-
-////////////////////////////////////////////////////////////////////////////////
-// !!! ESTABLISH PUBLIC STATIC FOLDER !!!
-////////////////////////////////////////////////////////////////////////////////
-
-app.use(express.static(path.join(__dirname, 'public'))); // default dir for including files on client side
-
-////////////////////////////////////////////////////////////////////////////////
-// REQUIRES
-////////////////////////////////////////////////////////////////////////////////
-
-// DB MODELS
-require('./models/Idea.js');
-require('./models/User.js');
-const IdeaModel = mongoose.model('Idea');
-const UserModel = mongoose.model('User');
-
-// PASSPORT CONFIG 
-// !!! PASS passport required instance in CONFIG !!!
-require('./config/passport.js')(passport); // separation middleware from APP [IIF]
-
-// HELPERS
-const ensureLogin = require('./helprs/ensureLogin.js');
-
-////////////////////////////////////////////////////////////////////////////////
-// !!! RUN LISTENING
-////////////////////////////////////////////////////////////////////////////////
-
-const portListener = function() {
-    const now = new Date().toString().substr(4, 20);
-    console.log(`[${now}] Server started on port ${port}...`);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-const port = process.env.PORT || 5000; // process.env.PORT for Heroku
-app.listen(port, portListener); // basically listens sertain port
-
-////////////////////////////////////////////////////////////////////////////////
-// SITE MECHANICS (searches by default in views directory)
+// ROUTES HANDLERS (render)
 ////////////////////////////////////////////////////////////////////////////////
 
 const getReqRoot = function(req, res) {
@@ -149,6 +146,7 @@ const getReqRoot = function(req, res) {
         title: "Welcome",
         section: "Jot down your video ideas with VidJot!" 
     }; // object sent to index.hbs
+
     res.render('index', pkg); // looking for index.hbs in default views folder
 }
 
@@ -340,6 +338,9 @@ const getReqLogoutUser = function(req, res) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// ROUTES
+
+const ensureLogin = require('./helprs/ensureLogin.js');
 
 app.get('/', getReqRoot); // get request to app's root (/index.hbs)
 app.get('/about', getReqAbout); 

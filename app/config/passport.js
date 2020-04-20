@@ -37,8 +37,8 @@ const handStrategy = function(req /* flash */, email, password, done /* cb */) {
 // Create LS with spec and handled strategy
 const ls = new LocalStrategy(spec, handStrategy);
 
-// PASSPORT MIDDLEWARE
-// !!! CAPTURE passport required instance from APP !!!
+// PASSPORT MIDDLEWARE !!! CATCH required passport instance from main.js !!!
+
 module.exports = function(passport) {
     // Exporting back in APP
     passport.use('local', ls);
