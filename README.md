@@ -17,7 +17,7 @@ Remote deployment built on Heroku using mLab.
 <hr />
 <h2>Repo Link</h2>
 
-https://infinite-beyond-89728.herokuapp.com/
+https://heroku-vidjot.herokuapp.com/
 
 <hr />
 <h2>App Screenshot</h2>
