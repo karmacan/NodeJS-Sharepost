@@ -75,7 +75,7 @@ app.use(methodOverride('_method'));
 const expses = require('express-session'); // for flash
 
 app.use(expses({
-    secret: '',
+    secret: 'p@ssc0de',
     resave: true,
     saveUninitialized: true
 }));
@@ -144,7 +144,7 @@ app.use(setGlobal);
 const getReqRoot = function(req, res) {
     const pkg = { 
         title: "Welcome",
-        section: "Jot down your video ideas with VidJot!" 
+        section: "Share your video ideas!" 
     }; // object sent to index.hbs
 
     res.render('index', pkg); // looking for index.hbs in default views folder

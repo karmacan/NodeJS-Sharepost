@@ -1,4 +1,4 @@
-<h1>NodeJS-Vidjot</h1>
+<h1>NodeJS-Sharepost</h1>
 
 <h2>User Guide</h2>
 
@@ -17,9 +17,9 @@ Remote deployment built on Heroku using mLab.
 <hr />
 <h2>Repo Link</h2>
 
-https://heroku-vidjot.herokuapp.com/
+https://xxx-sharepost.herokuapp.com/
 
-<hr />
-<h2>App Screenshot</h2>
+<!-- <hr />
+<h2>App Screenshot</h2> -->
 
-<img src="./screenshot.png" />
+<!-- <img src="./screenshot.png" /> -->
