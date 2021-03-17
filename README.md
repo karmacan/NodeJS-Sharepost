@@ -17,7 +17,7 @@ Remote deployment built on Heroku using mLab.
 <hr />
 <h2>Repo Link</h2>
 
-https://xxx-sharepost.herokuapp.com/
+https://sharepostt.herokuapp.com/
 
 <!-- <hr />
 <h2>App Screenshot</h2> -->
